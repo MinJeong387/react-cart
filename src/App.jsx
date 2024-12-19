@@ -32,11 +32,11 @@ function App() {
   // API에서 목록 받아오는 함수
   const fetchItems = async () => {
     try {
-      const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl); // apiUrl 주소로 HTTP 요청 보내고 -> 응답 올 때까지 기다린다(await)
       if (!response.ok) {
         throw new Error("데이터를 받아오지 못했습니다.");
       }
-      const data = await response.json();
+      const data = await response.json(); // 응답데이터를 JSON 형식으로 파싱
       // console.log(data);
       setItemList(data);
       setIsLoading(false); // 로딩이 끝났음을 알림
