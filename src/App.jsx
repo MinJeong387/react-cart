@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import CartHeader from "./components/CartHeader";
 import ShopList from "./components/ShopList";
 import CartInput from "./components/CartInput";
@@ -12,21 +13,40 @@ function App() {
     { id: 3, name: "쪽파", isBought: true },
     { id: 4, name: "고춧가루", isBought: false },
   ]);
+  //  산 물건 보기 여부를 체크할 state
+  const [showBoughtItems, setShowBoughtItems] = useState(true);
 
-  // isBought === false인 것만 필터링
-  // isBought === false인 것들
+  //  isBought === false인 것만 필터링
+  //  isBought === false인 것들
   const shopItems = itemList.filter((item) => !item.isBought);
+  //  isBought === true인 것들의 목록
+  const boughtItems = itemList.filter((item) => item.isBought);
 
-  // id => isBought를 true <-> false
+  //  새 아이템 추가
+  const addNewItem = (name) => {
+    //  id 생성 -> id의 최댓값 + 1
+    const newId =
+      itemList.length > 0
+        ? Math.max(...itemList.map((item) => item.id)) + 1
+        : 1;
+    //  객체 생성
+    //  속성이 key이름과 값 이름이 같을 때 -> 줄여쓸 수 있다.
+    //  name: name => name
+    const newItem = { id: newId, name, isBought: false };
+    //  itemList에 새 아이템 추가
+    const newItemList = [...itemList, newItem];
+    setItemList(newItemList);
+  };
+
+  //  id => isBought를 true <-> false
   const toggleBought = (id) => {
-    const newItemList = itemList.map(
-      (item) => (item.id === id ? { ...item, isBought: !item.isBought } : item)
-      // ...item 이라는건 id=4 name=00 isB..=00 풀어쓰고, 맞으면 isBought를 뒤집어라
+    const newItemList = itemList.map((item) =>
+      item.id === id ? { ...item, isBought: !item.isBought } : item
     );
     setItemList(newItemList);
   };
 
-  // id => item 삭제
+  //  id => item 삭제
   const deleteItem = (id) => {
     const newItemList = itemList.filter((item) => item.id !== id);
     setItemList(newItemList);
@@ -50,10 +70,18 @@ function App() {
           deleteItem={deleteItem}
         />
 
-        <CartInput />
-        <input type="checkbox" id="show-bought-items" />
+        <CartInput addNewItem={addNewItem} />
+        <input
+          type="checkbox"
+          id="show-bought-items"
+          checked={showBoughtItems}
+          onChange={(event) => setShowBoughtItems(event.target.checked)}
+        />
         <label>산 물건 보기</label>
-        <BoughtList />
+        {/* 선택적 렌더링 */}
+        {showBoughtItems && (
+          <BoughtList items={boughtItems} toggleBought={toggleBought} />
+        )}
       </main>
       <CartFooter />
     </div>
