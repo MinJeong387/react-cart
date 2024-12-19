@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 function ShopList({ items, toggleBought, deleteItem }) {
   //  isBought === false인 아이템들
   console.log("살 물건들:", items);
@@ -16,4 +18,11 @@ function ShopList({ items, toggleBought, deleteItem }) {
     </div>
   );
 }
+
+ShopList.propTypes = {
+  items: PropTypes.array,
+  toggleBought: PropTypes.func,
+  deleteItem: PropTypes.func,
+};
+
 export default ShopList;

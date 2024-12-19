@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 function BoughtList({ items, toggleBought }) {
   return (
     <div>
@@ -13,4 +15,10 @@ function BoughtList({ items, toggleBought }) {
     </div>
   );
 }
+
+BoughtList.propTypes = {
+  items: PropTypes.array,
+  toggleBought: PropTypes.func,
+};
+
 export default BoughtList;

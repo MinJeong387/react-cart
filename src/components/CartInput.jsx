@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 
 function CartInput({ addNewItem }) {
@@ -24,4 +25,9 @@ function CartInput({ addNewItem }) {
     </section>
   );
 }
+
+CartInput.propTypes = {
+  addNewItem: PropTypes.func,
+};
+
 export default CartInput;
