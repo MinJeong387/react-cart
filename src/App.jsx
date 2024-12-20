@@ -66,10 +66,11 @@ function App() {
     //  name: name => name
     const newItem = { id: newId, name, isBought: false };
 
-    //  itemList에 새 아이템 추가
-    // const newItemList = [...itemList, newItem];    -> 이거는 로컬방식
+    //  itemList에 새 아이템 추가                           -> 이거는 로컬방식
+    // const newItemList = [...itemList, newItem];
     // setItemList(newItemList);
 
+    //  itemList에 새 아이템 추가                          -> 이게 서버에 요청하는 방식
     // -> REST 서버에 POST 호출   -> CREATE
     try {
       const response = await fetch(apiUrl, {
@@ -98,10 +99,26 @@ function App() {
     setItemList(newItemList);
   };
 
-  //  id => item 삭제
-  const deleteItem = (id) => {
-    const newItemList = itemList.filter((item) => item.id !== id);
-    setItemList(newItemList);
+  //  id => item 삭제                  -> 이거는 로컬방식
+  const deleteItem = async (id) => {
+    // const newItemList = itemList.filter((item) => item.id !== id);
+    // setItemList(newItemList);
+
+    //  id => item 삭제                -> 이게 서버에 요청하는 방식 : DELETE method로 서버에 요청
+    try {
+      const response = await fetch(`${apiUrl}/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("아이템을 삭제하지 못했습니다.");
+      }
+      // 목록 갱신
+      fetchItems();
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
   };
 
   return (
