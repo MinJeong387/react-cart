@@ -7,7 +7,7 @@ import BoughtList from "./components/BoughtList";
 import CartFooter from "./components/CartFooter";
 
 function App() {
-  const apiUrl = "http://localhost:3000/shoplist";
+  const apiUrl = "http://localhost:1337/shoplist";
   // 서버로부터 API 호출해서 쇼핑 목록 받아오기
   // const [itemList, setItemList] = useState([
   //   { id: 1, name: "무", isBought: false },
@@ -55,7 +55,7 @@ function App() {
   if (error) return <div>에러: {error}</div>;
 
   //  새 아이템 추가
-  const addNewItem = (name) => {
+  const addNewItem = async (name) => {
     //  id 생성 -> id의 최댓값 + 1
     const newId =
       itemList.length > 0
@@ -65,9 +65,29 @@ function App() {
     //  속성이 key이름과 값 이름이 같을 때 -> 줄여쓸 수 있다.
     //  name: name => name
     const newItem = { id: newId, name, isBought: false };
+
     //  itemList에 새 아이템 추가
-    const newItemList = [...itemList, newItem];
-    setItemList(newItemList);
+    // const newItemList = [...itemList, newItem];    -> 이거는 로컬방식
+    // setItemList(newItemList);
+
+    // -> REST 서버에 POST 호출   -> CREATE
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newItem),
+      });
+      // 요청 결과 확인
+      if (!response.ok) {
+        throw new Error("새 아이템을 추가하지 못했습니다.");
+      }
+      // 리스트 갱신
+      fetchItems();
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   //  id => isBought를 true <-> false
