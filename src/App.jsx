@@ -7,8 +7,10 @@ import BoughtList from "./components/BoughtList";
 import CartFooter from "./components/CartFooter";
 
 function App() {
-  const apiUrl = "http://localhost:3000/shoplist";
-  // 서버로부터 API 호출해서 쇼핑 목록 받아오기
+  // const apiUrl = "http://localhost:1337/shoplist";
+  // const apiUrl = "http://localhost:3000/shoplist";
+  const apiUrl = "http://localhost:8088/api/shoplist";
+  //  서버로부터 API 호출해서 쇼핑 목록 받아오기
   // const [itemList, setItemList] = useState([
   //   { id: 1, name: "무", isBought: false },
   //   { id: 2, name: "배추", isBought: false },
@@ -18,9 +20,9 @@ function App() {
   const [itemList, setItemList] = useState([]);
   //  산 물건 보기 여부를 체크할 state
   const [showBoughtItems, setShowBoughtItems] = useState(true);
-  // 페이지 로딩 상태 체크 state
+  //  페이지 로딩 상태 체크 state
   const [isLoading, setIsLoading] = useState(true);
-  // 에러 메시지 출력을 위한 state
+  //  에러 메시지 출력을 위한 state
   const [error, setError] = useState(null);
 
   //  isBought === false인 것만 필터링
@@ -29,27 +31,27 @@ function App() {
   //  isBought === true인 것들의 목록
   const boughtItems = itemList.filter((item) => item.isBought);
 
-  // API에서 목록 받아오는 함수
+  //  API에서 목록 받아오는 함수
   const fetchItems = async () => {
     try {
-      const response = await fetch(apiUrl); // apiUrl 주소로 HTTP 요청 보내고 -> 응답 올 때까지 기다린다(await)
+      const response = await fetch(apiUrl);
       if (!response.ok) {
         throw new Error("데이터를 받아오지 못했습니다.");
       }
-      const data = await response.json(); // 응답데이터를 JSON 형식으로 파싱
+      const data = await response.json();
       // console.log(data);
       setItemList(data);
-      setIsLoading(false); // 로딩이 끝났음을 알림
+      setIsLoading(false); //  로딩이 끝났음을 알림
     } catch (err) {
       // console.error(err);
       setError(err.message);
-      setIsLoading(false); // 로딩이 끝남
+      setIsLoading(false); //  로딩이 끝남
     }
   };
 
   useEffect(() => {
     fetchItems();
-  }, []); // -> 컴포넌트가 처음 로딩되었을 때의 이펙트 발생
+  }, []); //  -> 컴포넌트가 처음 로딩되었을 때의 이펙트 발생
 
   if (isLoading) return <div>로딩 중...</div>;
   if (error) return <div>에러: {error}</div>;
@@ -65,13 +67,10 @@ function App() {
     //  속성이 key이름과 값 이름이 같을 때 -> 줄여쓸 수 있다.
     //  name: name => name
     const newItem = { id: newId, name, isBought: false };
+    //  itemList에 새 아이템 추가
+    // const newItemList = [...itemL
 
-    //  itemList에 새 아이템 추가                           -> 이거는 로컬방식
-    // const newItemList = [...itemList, newItem];
-    // setItemList(newItemList);
-
-    //  itemList에 새 아이템 추가                          -> 이게 서버에 요청하는 방식
-    // -> REST 서버에 POST 호출   -> CREATE
+    //  -> REST 서버에 POST 호출 -> CREATE
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -80,11 +79,11 @@ function App() {
         },
         body: JSON.stringify(newItem),
       });
-      // 요청 결과 확인
+      //  요청 결과 확인
       if (!response.ok) {
         throw new Error("새 아이템을 추가하지 못했습니다.");
       }
-      // 리스트 갱신
+      //  리스트 갱신
       fetchItems();
     } catch (err) {
       setError(err.message);
@@ -95,16 +94,17 @@ function App() {
   const toggleBought = async (id) => {
     /*
     const newItemList = itemList.map((item) =>
-      item.id === id ? { ...item, isBought: !item.isBought } : item
+      item.id === id ? { ...item, isBought: !item.isBought } 
+                        : item
     );
     setItemList(newItemList);
     */
-
-    // id로 아이템을 찾아서 -> 해당 아이템의 isBought 값을 반전 : true <-> false
+    //  id로 아이템을 찾아서
+    //  해당 아이템의 isBought 값을 반전 true <-> false
     const updatedItem = itemList.find((item) => item.id === id);
     updatedItem.isBought = !updatedItem.isBought;
+    //  서버에 UPDATE 요청 전송
 
-    // 서버에 UPDATE 요청 전송                                             -> 서버에 요청하는 방식
     try {
       const response = await fetch(`${apiUrl}/${id}`, {
         method: "PUT",
@@ -113,7 +113,6 @@ function App() {
         },
         body: JSON.stringify(updatedItem),
       });
-
       if (!response.ok) {
         throw new Error("데이터를 수정하지 못했습니다.");
       }
@@ -124,21 +123,19 @@ function App() {
     }
   };
 
-  //  id => item 삭제                  -> 이거는 로컬방식
+  //  id => item 삭제
   const deleteItem = async (id) => {
     // const newItemList = itemList.filter((item) => item.id !== id);
     // setItemList(newItemList);
-
-    //  id => item 삭제                -> 이게 서버에 요청하는 방식 : DELETE method로 서버에 요청
+    //  DELETE method로 요청
     try {
       const response = await fetch(`${apiUrl}/${id}`, {
         method: "DELETE",
       });
-
       if (!response.ok) {
         throw new Error("아이템을 삭제하지 못했습니다.");
       }
-      // 목록 갱신
+      //  목록 갱신
       fetchItems();
     } catch (err) {
       console.error(err);
